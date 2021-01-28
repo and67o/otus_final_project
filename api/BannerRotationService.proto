@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package bannerRotation;
+
+option go_package = ".;server";
+
+service bannerRotation {
+  rpc addBanner(addBannerRequest) returns (addBannerResponse) {}
+  rpc deleteBanner(deleteBannerRequest) returns (deleteBannerResponse) {}
+  rpc clickBanner(clickBannerRequest) returns (clickBannerResponse) {}
+  rpc showBanner(showBannerRequest) returns (showBannerResponse) {}
+}
+
+message addBannerRequest {
+  uint64 SlotId = 1;
+  uint64 BannerId = 2;
+}
+
+message addBannerResponse {}
+
+message deleteBannerRequest {
+  uint64 BannerId = 1;
+  int64 SlotId = 2;
+}
+
+message deleteBannerResponse {}
+
+message clickBannerRequest {
+  int64 SlotId = 1;
+  uint64 BannerId = 2;
+  int64 GroupId = 3;
+}
+
+message clickBannerResponse {}
+
+message showBannerRequest {
+  int64 SlotId = 1;
+  int64 GroupId = 2;
+}
+
+message showBannerResponse {
+  int64 BannerId = 1;
+}
