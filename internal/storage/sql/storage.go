@@ -15,18 +15,15 @@ type Storage struct {
 type StorageAction interface {
 	AddBanner(b *model.BannerPlace) error
 	DeleteBanner(b *model.BannerPlace) error
-	Banners(slotId int, groupId int) ([]model.Banner, error)
+	Banners(slotId int64, groupId int64) ([]model.Banner, error)
 	IncShowCount(slotId int64, groupId int64, bannerId int64) error
 	IncClickCount(slotId int64, groupId int64, bannerId int64) error
-
-	//ClickBanner(request *ClickBannerRequest) error
-	//ShowBanner(request *ShowBannerRequest) (int, error)
 }
 
 const driverName = "mysql"
 const format = "2006-01-02 15:04:05"
-const click_count = ""
-const show_count = ""
+const clickCount = "count_click"
+const showCount = "count_show"
 
 func New(config configuration.DBConf) (StorageAction, error) {
 	db, err := sqlx.Open(driverName, dataSourceName(config))
@@ -53,7 +50,7 @@ func dataSourceName(config configuration.DBConf) string {
 }
 
 func (s *Storage) AddBanner(b *model.BannerPlace) error {
-	_, err := s.db.Exec("INSERT INTO banners (banner_id, slot_id) VALUES (?, ?)",
+	_, err := s.db.Exec("INSERT INTO rotation (id_banner, id_slot) VALUES (?, ?)",
 		b.BannerId,
 		b.SlotId,
 	)
@@ -65,7 +62,7 @@ func (s *Storage) AddBanner(b *model.BannerPlace) error {
 }
 
 func (s *Storage) DeleteBanner(b *model.BannerPlace) error {
-	_, err := s.db.Exec("DELETE FROM banners where banner_id = ?, slot_id = ?",
+	_, err := s.db.Exec("DELETE FROM rotation WHERE id_banner = ? AND id_slot = ?",
 		b.BannerId,
 		b.SlotId,
 	)
@@ -76,12 +73,16 @@ func (s *Storage) DeleteBanner(b *model.BannerPlace) error {
 	return nil
 }
 
-func (s *Storage) Banners(slotId int, groupId int) ([]model.Banner, error) {
+func (s *Storage) Banners(slotId int64, groupId int64) ([]model.Banner, error) {
 	var err error
 	var banners []model.Banner
 
-	res, err := s.db.Query("", slotId, groupId)
+	sql := fmt.Sprintf("SELECT r.id_banner, r.id_slot, s.count_show, s.count_click " +
+		"from rotation r " +
+		"left join statistics s on r.id_banner = s.id_banner and r.id_slot = s.id_slot and r.id_slot = ? " +
+		"where id_group = ?")
 
+	res, err := s.db.Query(sql, slotId, groupId)
 	if err != nil {
 		return nil, err
 	}
@@ -106,14 +107,14 @@ func (s *Storage) Banners(slotId int, groupId int) ([]model.Banner, error) {
 }
 
 func (s *Storage) IncShowCount(slotId int64, groupId int64, bannerId int64) error {
-	err := s.incCount(slotId, groupId, bannerId, show_count)
+	err := s.incCount(slotId, groupId, bannerId, showCount)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 func (s *Storage) IncClickCount(slotId int64, groupId int64, bannerId int64) error {
-	err := s.incCount(slotId, groupId, bannerId, click_count)
+	err := s.incCount(slotId, groupId, bannerId, clickCount)
 	if err != nil {
 		return err
 	}
@@ -121,14 +122,10 @@ func (s *Storage) IncClickCount(slotId int64, groupId int64, bannerId int64) err
 }
 
 func (s *Storage) incCount(slotId int64, groupId int64, bannerId int64, value string) error {
-	sql := fmt.Sprintf("INSERT INTO statistics (id_slot, id_banner, id_group)"+
-		"VALUES (%d, %d, %d)"+
-		"ON DUPLICATE KEY UPDATE %s = %s + 1", slotId, bannerId, groupId, value, value)
-	_, err := s.db.Query(sql,
-		slotId,
-		groupId,
-		bannerId,
-	)
+	sql := fmt.Sprintf("INSERT INTO statistics (id_slot, id_banner, id_group, %s) "+
+		"VALUES (?, ?, ?, 1) "+
+		"ON DUPLICATE KEY UPDATE %s = %s + 1", value, value,value)
+	_, err := s.db.Exec(sql,  slotId, bannerId, groupId)
 	if err != nil {
 		return err
 	}

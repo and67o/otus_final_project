@@ -6,3 +6,81 @@
 2021-01-27T20:31:22.981+0300	INFO	logger/logger.go:93	calendar is running...
 2021-01-27T20:31:22.981+0300	INFO	logger/logger.go:93	starting  server
 2021-01-27T20:32:18.030+0300	INFO	logger/logger.go:93	calendar is running...
+2021-01-31T21:13:24.425+0300	FATAL	logger/logger.go:101	fail bind queue for Rabbit
+github.com/and67o/otus_project/internal/logger.Logger.Fatal
+	/var/www/golang/src/project/internal/logger/logger.go:101
+github.com/and67o/otus_project/internal/queue.New
+	/var/www/golang/src/project/internal/queue/queue.go:69
+github.com/and67o/otus_project/internal/queue.TestRabbit
+	/var/www/golang/src/project/internal/queue/queue_test.go:20
+testing.tRunner
+	/root/sdk/go1.15.1/src/testing/testing.go:1108
+2021-01-31T21:13:48.359+0300	FATAL	logger/logger.go:101	fail bind queue for Rabbit
+github.com/and67o/otus_project/internal/logger.Logger.Fatal
+	/var/www/golang/src/project/internal/logger/logger.go:101
+github.com/and67o/otus_project/internal/queue.New
+	/var/www/golang/src/project/internal/queue/queue.go:69
+github.com/and67o/otus_project/internal/queue.TestRabbit
+	/var/www/golang/src/project/internal/queue/queue_test.go:20
+testing.tRunner
+	/root/sdk/go1.15.1/src/testing/testing.go:1108
+2021-01-31T21:14:04.718+0300	FATAL	logger/logger.go:101	fail bind queue for Rabbit
+github.com/and67o/otus_project/internal/logger.Logger.Fatal
+	/var/www/golang/src/project/internal/logger/logger.go:101
+github.com/and67o/otus_project/internal/queue.New
+	/var/www/golang/src/project/internal/queue/queue.go:69
+github.com/and67o/otus_project/internal/queue.TestRabbit
+	/var/www/golang/src/project/internal/queue/queue_test.go:20
+testing.tRunner
+	/root/sdk/go1.15.1/src/testing/testing.go:1108
+2021-01-31T21:14:11.406+0300	FATAL	logger/logger.go:101	fail bind queue for Rabbit
+github.com/and67o/otus_project/internal/logger.Logger.Fatal
+	/var/www/golang/src/project/internal/logger/logger.go:101
+github.com/and67o/otus_project/internal/queue.New
+	/var/www/golang/src/project/internal/queue/queue.go:69
+github.com/and67o/otus_project/internal/queue.TestRabbit
+	/var/www/golang/src/project/internal/queue/queue_test.go:20
+testing.tRunner
+	/root/sdk/go1.15.1/src/testing/testing.go:1108
+2021-01-31T21:14:23.071+0300	FATAL	logger/logger.go:101	fail bind queue for Rabbit
+github.com/and67o/otus_project/internal/logger.Logger.Fatal
+	/var/www/golang/src/project/internal/logger/logger.go:101
+github.com/and67o/otus_project/internal/queue.New
+	/var/www/golang/src/project/internal/queue/queue.go:70
+github.com/and67o/otus_project/internal/queue.TestRabbit
+	/var/www/golang/src/project/internal/queue/queue_test.go:20
+testing.tRunner
+	/root/sdk/go1.15.1/src/testing/testing.go:1108
+2021-01-31T22:55:23.785+0300	ERROR	logger/logger.go:97	not push to queue:Exception (504) Reason: "channel/connection is not open"
+github.com/and67o/otus_project/internal/logger.Logger.Error
+	/var/www/golang/src/project/internal/logger/logger.go:97
+github.com/and67o/otus_project/internal/queue.(*RabbitMQ).Push
+	/var/www/golang/src/project/internal/queue/queue.go:95
+github.com/and67o/otus_project/internal/app.(*App).ShowBanner
+	/var/www/golang/src/project/internal/app/app.go:96
+github.com/and67o/otus_project/internal/app.TestBaseAction
+	/var/www/golang/src/project/internal/app/app_test.go:77
+testing.tRunner
+	/root/sdk/go1.15.1/src/testing/testing.go:1108
+2021-01-31T22:55:28.265+0300	ERROR	logger/logger.go:97	not push to queue:Exception (504) Reason: "channel/connection is not open"
+github.com/and67o/otus_project/internal/logger.Logger.Error
+	/var/www/golang/src/project/internal/logger/logger.go:97
+github.com/and67o/otus_project/internal/queue.(*RabbitMQ).Push
+	/var/www/golang/src/project/internal/queue/queue.go:95
+github.com/and67o/otus_project/internal/app.(*App).ShowBanner
+	/var/www/golang/src/project/internal/app/app.go:96
+github.com/and67o/otus_project/internal/app.TestBaseAction
+	/var/www/golang/src/project/internal/app/app_test.go:77
+testing.tRunner
+	/root/sdk/go1.15.1/src/testing/testing.go:1108
+2021-01-31T22:56:19.219+0300	ERROR	logger/logger.go:97	not push to queue:Exception (504) Reason: "channel/connection is not open"
+github.com/and67o/otus_project/internal/logger.Logger.Error
+	/var/www/golang/src/project/internal/logger/logger.go:97
+github.com/and67o/otus_project/internal/queue.(*RabbitMQ).Push
+	/var/www/golang/src/project/internal/queue/queue.go:95
+github.com/and67o/otus_project/internal/app.(*App).ShowBanner
+	/var/www/golang/src/project/internal/app/app.go:97
+github.com/and67o/otus_project/internal/app.TestBaseAction
+	/var/www/golang/src/project/internal/app/app_test.go:77
+testing.tRunner
+	/root/sdk/go1.15.1/src/testing/testing.go:1108

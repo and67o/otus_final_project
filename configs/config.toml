@@ -14,3 +14,9 @@ log_prod_on = false
 [server]
 server_host="localhost"
 server_port="4501"
+
+[rabbit]
+rabbit_user = "guest"
+rabbit_password = "guest"
+rabbit_host = "127.0.0.1"
+rabbit_port = 5672

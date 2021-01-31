@@ -3,6 +3,7 @@ package rmq
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/and67o/otus_project/internal/configuration"
 	"github.com/and67o/otus_project/internal/logger"
 	"github.com/and67o/otus_project/internal/model"
@@ -18,10 +19,11 @@ type RabbitMQ struct {
 }
 
 type Queue interface {
-
+	Push(event model.StatisticsEvent) error
 }
 
 const nameQueue = "banner_queue"
+const nameExchangeQueue = "banner_exchange_queue"
 
 func New(config configuration.RabbitMQ, logg logger.Interface) (*RabbitMQ, error) {
 	var err error
@@ -30,18 +32,18 @@ func New(config configuration.RabbitMQ, logg logger.Interface) (*RabbitMQ, error
 		logger: logg,
 	}
 
-	connectionCtx, connectionCtxCancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer connectionCtxCancel()
+	_, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
 
-	res.connection, err = connectionWait(connectionCtx, getUrl(config))
+	res.connection, err = amqp.Dial(getUrl(config))
 	if err != nil {
-		res.logger.Fatal("fail RabbitMQ connection")
+		res.logger.Fatal("fail Rabbit connection" + err.Error())
 		return nil, err
 	}
 
 	res.channel, err = res.connection.Channel()
 	if err != nil {
-		res.logger.Fatal("fail to open channel for RabbitMQ")
+		res.logger.Fatal("fail to open channel for Rabbit" + err.Error())
 		return nil, err
 	}
 	_, err = res.channel.QueueDeclare(
@@ -53,28 +55,11 @@ func New(config configuration.RabbitMQ, logg logger.Interface) (*RabbitMQ, error
 		nil,
 	)
 	if err != nil {
-		res.logger.Fatal("fail create queue for RabbitMQ")
+		res.logger.Fatal("fail create queue for Rabbit")
 		return nil, err
 	}
 
 	return res, nil
-}
-
-func connectionWait(ctx context.Context, dsn string) (*amqp.Connection, error) {
-	var err error
-
-	var res *amqp.Connection
-
-	for {
-		res, err = amqp.Dial(dsn)
-		if err == nil || ctx.Err() != nil {
-			break
-		}
-
-		time.Sleep(time.Second)
-	}
-
-	return res, err
 }
 
 func (q *RabbitMQ) Push(event model.StatisticsEvent) error {
@@ -85,7 +70,7 @@ func (q *RabbitMQ) Push(event model.StatisticsEvent) error {
 	}
 
 	err = q.channel.Publish(
-		"",
+		nameExchangeQueue,
 		nameQueue,
 		false,
 		false,
@@ -115,5 +100,6 @@ func (q *RabbitMQ) Stop() {
 }
 
 func getUrl(config configuration.RabbitMQ) string {
-	return "amqp://guest:guest@localhost:5672/"
+	return fmt.Sprintf("amqp://%s:%s@%s:%d/", config.User, config.Pass, config.Host, config.Port)
+	//return "amqp://guest:guest@localhost:5672/"
 }

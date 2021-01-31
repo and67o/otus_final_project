@@ -1,4 +1,4 @@
-//go:generate protoc -I ../../api/ BannerRotationService.proto --go_out=. --go-grpc_out=.
+//go:generate protoc -I ../../api/ BannerRotationService.proto --go_out=pb --go-grpc_out=pb
 
 package server
 
@@ -7,6 +7,7 @@ import (
 	"errors"
 	"github.com/and67o/otus_project/internal/app"
 	"github.com/and67o/otus_project/internal/configuration"
+	server "github.com/and67o/otus_project/internal/server/pb"
 	"google.golang.org/grpc"
 	"net"
 )
@@ -15,7 +16,6 @@ const network = "tcp"
 
 type Server struct {
 	app       *app.App
-	uBRServer UnimplementedBannerRotationServer
 	addr      string
 	server    *grpc.Server
 }
@@ -24,13 +24,13 @@ type GRPC interface {
 	Stop() error
 	Start(ctx context.Context) error
 
-	GRPCRoutes
+	//GRPCRoutes
 }
 
 func New(app *app.App, config configuration.GRPCConf) GRPC {
 	return &Server{
 		app:       app,
-		uBRServer: UnimplementedBannerRotationServer{},
+		//uBRServer: server.UnimplementedBannerRotationServer{},
 		addr:      net.JoinHostPort(config.Host, config.Port),
 		server:    nil,
 	}
@@ -53,11 +53,10 @@ func (s *Server) Start(ctx context.Context) error {
 	}
 
 	serverGRPC := grpc.NewServer()
-	RegisterBannerRotationServer(serverGRPC, s.uBRServer)
 	s.server = serverGRPC
+	server.RegisterBannerRotationServer(serverGRPC, s.app)
 
-
-	err = s.server.Serve(l)
+	err = serverGRPC.Serve(l)
 	if err != nil {
 		return err
 	}

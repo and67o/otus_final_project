@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"github.com/and67o/otus_project/internal/app"
 	"github.com/and67o/otus_project/internal/configuration"
 	"github.com/and67o/otus_project/internal/logger"
@@ -40,7 +41,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	queue, err := rmq.New(config.RabbitMQ, logg)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	queue, err := rmq.New(config.Rabbit, logg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,12 +53,19 @@ func main() {
 
 	GRPCServer := server.New(rotator, config.Server)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		select {
+		case <-ctx.Done():
+		case sig := <-signals:
+			logg.Info(fmt.Sprintf("signal -  %s", sig))
+			cancel()
+		}
+	}()
 	wg := sync.WaitGroup{}
 
-	go watchSignals(GRPCServer)
+	//go watchSignals(GRPCServer)
 
 	wg.Add(1)
 	startServer(&wg, ctx, GRPCServer, logg)

@@ -27,7 +27,7 @@ message deleteBannerResponse {}
 
 message clickBannerRequest {
   int64 SlotId = 1;
-  uint64 BannerId = 2;
+  int64 BannerId = 2;
   int64 GroupId = 3;
 }
 

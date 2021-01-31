@@ -1,10 +1,10 @@
 package configuration
 
 type Config struct {
-	Logger   LoggerConf
-	DB       DBConf
-	Server   GRPCConf
-	RabbitMQ RabbitMQ
+	Logger LoggerConf
+	DB     DBConf
+	Server GRPCConf
+	Rabbit RabbitMQ
 }
 
 type GRPCConf struct {
@@ -28,5 +28,8 @@ type LoggerConf struct {
 }
 
 type RabbitMQ struct {
-
+	User string `mapstructure:"rabbit_user"`
+	Pass string `mapstructure:"rabbit_user"`
+	Host string `mapstructure:"rabbit_host"`
+	Port int    `mapstructure:"rabbit_port"`
 }
