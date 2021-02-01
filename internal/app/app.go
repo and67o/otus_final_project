@@ -29,6 +29,7 @@ func New(storage sql.StorageAction, logger logger.Interface, queue rmq.Queue) *A
 }
 
 func (a *App) AddBanner(ctx context.Context, request *server.AddBannerRequest) (*server.AddBannerResponse, error) {
+	a.Logger.Info("11111")
 	banner := model.BannerPlace{
 		BannerId: int(request.BannerId),
 		SlotId:   int(request.SlotId),
@@ -36,7 +37,7 @@ func (a *App) AddBanner(ctx context.Context, request *server.AddBannerRequest) (
 
 	err := a.Storage.AddBanner(&banner)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("add banner: %w", err)
 	}
 
 	return &server.AddBannerResponse{}, nil
@@ -47,20 +48,19 @@ func (a *App) DeleteBanner(ctx context.Context, request *server.DeleteBannerRequ
 		BannerId: int(request.BannerId),
 		SlotId:   int(request.SlotId),
 	}
+
 	err := a.Storage.DeleteBanner(&banner)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("delete banner: %w", err)
 	}
 
 	return &server.DeleteBannerResponse{}, err
 }
 
 func (a *App) ClickBanner(ctx context.Context, request *server.ClickBannerRequest) (*server.ClickBannerResponse, error) {
-	var err error
-
-	err = a.Storage.IncClickCount(request.SlotId, request.GroupId, request.BannerId)
+	err := a.Storage.IncClickCount(request.SlotId, request.GroupId, request.BannerId)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("click banner: %w", err)
 	}
 
 	err = a.Queue.Push(model.StatisticsEvent{
@@ -71,19 +71,17 @@ func (a *App) ClickBanner(ctx context.Context, request *server.ClickBannerReques
 		Date:     time.Now(),
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("push to queue: %w", err)
 	}
 
 	return &server.ClickBannerResponse{}, nil
 }
 
 func (a *App) ShowBanner(ctx context.Context, request *server.ShowBannerRequest) (*server.ShowBannerResponse, error) {
-	var err error
-
 	banners, err := a.Storage.Banners(request.SlotId, request.GroupId)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("show banner: %w", err)
 	}
 
 	showBannerId := multiArmedBandits.Get(banners)
@@ -91,7 +89,7 @@ func (a *App) ShowBanner(ctx context.Context, request *server.ShowBannerRequest)
 	if showBannerId > 0 {
 		err = a.Storage.IncShowCount(request.SlotId, request.GroupId, showBannerId)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("increment count: %w", err)
 		}
 
 		err = a.Queue.Push(model.StatisticsEvent{
@@ -101,9 +99,8 @@ func (a *App) ShowBanner(ctx context.Context, request *server.ShowBannerRequest)
 			IDGroup:  request.GroupId,
 			Date:     time.Now(),
 		})
-		fmt.Println(22,err)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("push to queue: %w", err)
 		}
 	}
 

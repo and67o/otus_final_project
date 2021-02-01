@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"github.com/and67o/otus_project/internal/app"
 	"github.com/and67o/otus_project/internal/configuration"
 	"github.com/and67o/otus_project/internal/logger"
@@ -13,8 +12,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"sync"
-	"syscall"
 )
 
 var configFile string
@@ -53,43 +50,25 @@ func main() {
 
 	GRPCServer := server.New(rotator, config.Server)
 
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 	go func() {
-		select {
-		case <-ctx.Done():
-		case sig := <-signals:
-			logg.Info(fmt.Sprintf("signal -  %s", sig))
-			cancel()
+		signals := make(chan os.Signal, 1)
+		signal.Notify(signals, os.Interrupt)
+
+		<-signals
+		signal.Stop(signals)
+		cancel()
+
+		//ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+		//defer cancel()
+
+
+		if err := GRPCServer.Stop(); err != nil {
+			logg.Error("stop server"  + err.Error())
 		}
 	}()
-	wg := sync.WaitGroup{}
 
-	//go watchSignals(GRPCServer)
-
-	wg.Add(1)
-	startServer(&wg, ctx, GRPCServer, logg)
-	wg.Wait()
-}
-
-func watchSignals(server server.GRPC) {
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
-
-	<-signals
-	signal.Stop(signals)
-
-	err := server.Stop()
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func startServer(wg *sync.WaitGroup, ctx context.Context, s server.GRPC, logg logger.Interface) {
-	defer wg.Done()
 	logg.Info("starting  server")
-
-	err := s.Start(ctx)
+	err = GRPCServer.Start(ctx)
 	if err != nil {
 		logg.Fatal("failed to start server: " + err.Error())
 	}

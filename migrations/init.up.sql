@@ -21,3 +21,13 @@ CREATE TABLE `rotation`
   AUTO_INCREMENT = 30
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci
+
+
+
+INSERT INTO rotation (id, id_banner, id_slot) VALUES (23, 1, 2);
+INSERT INTO rotation (id, id_banner, id_slot) VALUES (22, 1, 3);
+INSERT INTO rotation (id, id_banner, id_slot) VALUES (33, 2, 1);
+INSERT INTO rotation (id, id_banner, id_slot) VALUES (25, 2, 2);
+INSERT INTO rotation (id, id_banner, id_slot) VALUES (28, 2, 3);
+INSERT INTO rotation (id, id_banner, id_slot) VALUES (26, 3, 1);
+INSERT INTO rotation (id, id_banner, id_slot) VALUES (27, 4, 3);

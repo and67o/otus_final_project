@@ -1,0 +1,35 @@
+version: '3.7'
+
+services:
+  # DB
+  myproject-db3:
+    image: mysql:8.0
+    restart: always
+    volumes:
+      - ./migrations/init.up.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3307:3306"
+    expose:
+      - '3306'
+    environment:
+      MYSQL_DATABASE: "go_api"
+      MYSQL_USER: "admin"
+      MYSQL_PASSWORD: "123"
+      MYSQL_ROOT_PASSWORD: "123"
+    networks:
+      banner-net:
+
+  # RabbitMQ
+  rmq:
+    image: rabbitmq:management-alpine
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    expose:
+      - "5672"
+      - "15672"
+    networks:
+      banner-net:
+networks:
+  banner-net:
+    name: banner

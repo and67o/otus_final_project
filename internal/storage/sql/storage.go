@@ -21,7 +21,6 @@ type StorageAction interface {
 }
 
 const driverName = "mysql"
-const format = "2006-01-02 15:04:05"
 const clickCount = "count_click"
 const showCount = "count_show"
 
@@ -55,7 +54,7 @@ func (s *Storage) AddBanner(b *model.BannerPlace) error {
 		b.SlotId,
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("add banner storage: %w", err)
 	}
 
 	return nil
@@ -74,7 +73,6 @@ func (s *Storage) DeleteBanner(b *model.BannerPlace) error {
 }
 
 func (s *Storage) Banners(slotId int64, groupId int64) ([]model.Banner, error) {
-	var err error
 	var banners []model.Banner
 
 	sql := fmt.Sprintf("SELECT r.id_banner, r.id_slot, s.count_show, s.count_click " +

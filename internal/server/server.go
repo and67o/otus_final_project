@@ -5,6 +5,7 @@ package server
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/and67o/otus_project/internal/app"
 	"github.com/and67o/otus_project/internal/configuration"
 	server "github.com/and67o/otus_project/internal/server/pb"
@@ -23,14 +24,12 @@ type Server struct {
 type GRPC interface {
 	Stop() error
 	Start(ctx context.Context) error
-
-	//GRPCRoutes
 }
 
 func New(app *app.App, config configuration.GRPCConf) GRPC {
+	fmt.Println(net.JoinHostPort(config.Host, config.Port))
 	return &Server{
 		app:       app,
-		//uBRServer: server.UnimplementedBannerRotationServer{},
 		addr:      net.JoinHostPort(config.Host, config.Port),
 		server:    nil,
 	}
