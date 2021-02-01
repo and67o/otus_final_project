@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"github.com/and67o/otus_project/internal/configuration"
 	"github.com/and67o/otus_project/internal/logger"
 	"github.com/and67o/otus_project/internal/model"
-	"time"
-
 	"github.com/streadway/amqp"
 )
 
@@ -35,15 +35,17 @@ func New(config configuration.RabbitMQ, logg logger.Interface) (*RabbitMQ, error
 	_, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	res.connection, err = amqp.Dial(getUrl(config))
+	res.connection, err = amqp.Dial(getURL(config))
 	if err != nil {
-		res.logger.Fatal("fail Rabbit connection" + err.Error())
+		res.logger.Fatal("fail Rabbit connection:" + err.Error())
+
 		return nil, err
 	}
 
 	res.channel, err = res.connection.Channel()
 	if err != nil {
-		res.logger.Fatal("fail to open channel for Rabbit" + err.Error())
+		res.logger.Fatal("fail to open channel for Rabbit:" + err.Error())
+
 		return nil, err
 	}
 	_, err = res.channel.QueueDeclare(
@@ -56,6 +58,7 @@ func New(config configuration.RabbitMQ, logg logger.Interface) (*RabbitMQ, error
 	)
 	if err != nil {
 		res.logger.Fatal("fail create queue for Rabbit")
+
 		return nil, err
 	}
 
@@ -99,7 +102,6 @@ func (q *RabbitMQ) Stop() {
 	}
 }
 
-func getUrl(config configuration.RabbitMQ) string {
+func getURL(config configuration.RabbitMQ) string {
 	return fmt.Sprintf("amqp://%s:%s@%s:%d/", config.User, config.Pass, config.Host, config.Port)
-	//return "amqp://guest:guest@localhost:5672/"
 }

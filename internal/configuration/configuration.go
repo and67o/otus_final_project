@@ -1,8 +1,8 @@
 package configuration
 
 import (
-	"errors"
 	"fmt"
+	"errors"
 
 	"github.com/spf13/viper"
 )

@@ -6,11 +6,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"google.golang.org/grpc"
+	"net"
+
 	"github.com/and67o/otus_project/internal/app"
 	"github.com/and67o/otus_project/internal/configuration"
 	server "github.com/and67o/otus_project/internal/server/pb"
-	"google.golang.org/grpc"
-	"net"
 )
 
 const network = "tcp"

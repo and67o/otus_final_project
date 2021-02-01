@@ -3,11 +3,12 @@ package logger
 import (
 	"errors"
 	"fmt"
-	"github.com/and67o/otus_project/internal/configuration"
 	"strings"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	"github.com/and67o/otus_project/internal/configuration"
 )
 
 type Logger struct {
@@ -52,6 +53,7 @@ func New(configuration configuration.LoggerConf) (*Logger, error) {
 	}
 
 	logger.logger = l
+
 	return logger, nil
 }
 

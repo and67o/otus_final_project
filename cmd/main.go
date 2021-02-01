@@ -58,12 +58,9 @@ func main() {
 		signal.Stop(signals)
 		cancel()
 
-		//ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
-		//defer cancel()
-
-
-		if err := GRPCServer.Stop(); err != nil {
-			logg.Error("stop server"  + err.Error())
+		err := GRPCServer.Stop()
+		if err != nil {
+			logg.Error("stop server" + err.Error())
 		}
 	}()
 

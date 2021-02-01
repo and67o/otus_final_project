@@ -2,12 +2,13 @@ package rmq
 
 import (
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/and67o/otus_project/internal/configuration"
 	"github.com/and67o/otus_project/internal/logger"
 	"github.com/and67o/otus_project/internal/model"
 	"github.com/stretchr/testify/require"
-	"testing"
-	"time"
 )
 
 var logConf = configuration.LoggerConf{

@@ -8,7 +8,7 @@ services:
     volumes:
       - ./migrations/init.up.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "3307:3306"
+      - "3306:3306"
     expose:
       - '3306'
     environment:

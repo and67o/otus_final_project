@@ -3,13 +3,14 @@ package app
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/and67o/otus_project/internal/logger"
 	"github.com/and67o/otus_project/internal/model"
-	"github.com/and67o/otus_project/internal/multiArmedBandits"
+	"github.com/and67o/otus_project/internal/multiarmedbandits"
 	rmq "github.com/and67o/otus_project/internal/queue"
 	server "github.com/and67o/otus_project/internal/server/pb"
 	"github.com/and67o/otus_project/internal/storage/sql"
-	"time"
 )
 
 type App struct {
@@ -29,10 +30,9 @@ func New(storage sql.StorageAction, logger logger.Interface, queue rmq.Queue) *A
 }
 
 func (a *App) AddBanner(ctx context.Context, request *server.AddBannerRequest) (*server.AddBannerResponse, error) {
-	a.Logger.Info("11111")
 	banner := model.BannerPlace{
-		BannerId: int(request.BannerId),
-		SlotId:   int(request.SlotId),
+		BannerID: int(request.BannerId),
+		SlotID:   int(request.SlotId),
 	}
 
 	err := a.Storage.AddBanner(&banner)
@@ -45,8 +45,8 @@ func (a *App) AddBanner(ctx context.Context, request *server.AddBannerRequest) (
 
 func (a *App) DeleteBanner(ctx context.Context, request *server.DeleteBannerRequest) (*server.DeleteBannerResponse, error) {
 	banner := model.BannerPlace{
-		BannerId: int(request.BannerId),
-		SlotId:   int(request.SlotId),
+		BannerID: int(request.BannerId),
+		SlotID:   int(request.SlotId),
 	}
 
 	err := a.Storage.DeleteBanner(&banner)
@@ -84,10 +84,10 @@ func (a *App) ShowBanner(ctx context.Context, request *server.ShowBannerRequest)
 		return nil, fmt.Errorf("show banner: %w", err)
 	}
 
-	showBannerId := multiArmedBandits.Get(banners)
+	showBannerID := multiarmedbandits.Get(banners)
 
-	if showBannerId > 0 {
-		err = a.Storage.IncShowCount(request.SlotId, request.GroupId, showBannerId)
+	if showBannerID > 0 {
+		err = a.Storage.IncShowCount(request.SlotId, request.GroupId, showBannerID)
 		if err != nil {
 			return nil, fmt.Errorf("increment count: %w", err)
 		}
@@ -95,7 +95,7 @@ func (a *App) ShowBanner(ctx context.Context, request *server.ShowBannerRequest)
 		err = a.Queue.Push(model.StatisticsEvent{
 			Type:     model.TypeShow,
 			IDSlot:   request.SlotId,
-			IDBanner: showBannerId,
+			IDBanner: showBannerID,
 			IDGroup:  request.GroupId,
 			Date:     time.Now(),
 		})
@@ -104,5 +104,5 @@ func (a *App) ShowBanner(ctx context.Context, request *server.ShowBannerRequest)
 		}
 	}
 
-	return &server.ShowBannerResponse{BannerId: showBannerId}, err
+	return &server.ShowBannerResponse{BannerId: showBannerID}, err
 }

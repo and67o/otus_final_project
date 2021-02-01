@@ -1,12 +1,13 @@
-package multiArmedBandits
+package multiarmedbandits
 
 import (
-	"github.com/and67o/otus_project/internal/model"
 	"math"
+
+	"github.com/and67o/otus_project/internal/model"
 )
 
 func Get(banners []model.Banner) int64 {
-	var selectedBannerId int64
+	var selectedBannerID int64
 	var count, maxCount float64
 	bannersCount := len(banners)
 
@@ -14,12 +15,12 @@ func Get(banners []model.Banner) int64 {
 		count = score(banner.ClickCount, banner.ShowCount, bannersCount)
 
 		if count > maxCount || bannersCount == 0 {
-			selectedBannerId = banner.ID
+			selectedBannerID = banner.ID
 			maxCount = count
 		}
 	}
 
-	return selectedBannerId
+	return selectedBannerID
 }
 
 func score(countClick int64, countShow int64, bannersCount int) float64 {
