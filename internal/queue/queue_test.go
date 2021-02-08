@@ -26,6 +26,8 @@ var rabbitConf = configuration.RabbitMQ{
 }
 
 func TestRabbit(t *testing.T) {
+	t.Skip(true)
+
 	logg, err := logger.New(logConf)
 	require.NoError(t, err)
 

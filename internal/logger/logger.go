@@ -15,13 +15,6 @@ type Logger struct {
 	logger *zap.Logger
 }
 
-type Interface interface {
-	Info(msg string)
-	Error(msg string)
-	Fatal(msg string)
-	Warn(msg string)
-}
-
 const (
 	levelDebug = "DEBUG"
 	levelError = "ERROR"
@@ -29,6 +22,10 @@ const (
 	levelWarn  = "WARN"
 
 	outPut = "stderr"
+)
+
+var (
+	notFoundError = errors.New("not found log level")
 )
 
 func New(configuration configuration.LoggerConf) (*Logger, error) {
@@ -71,7 +68,7 @@ func setLevel(level string) (*zap.AtomicLevel, error) {
 	case levelWarn:
 		l = zapcore.WarnLevel
 	default:
-		return nil, errors.New("not found log level")
+		return nil, notFoundError
 	}
 
 	lvl = zap.NewAtomicLevelAt(l)

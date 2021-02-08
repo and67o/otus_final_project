@@ -1,0 +1,40 @@
+language: go
+
+go:
+  - "1.15"
+
+os:
+  - linux
+
+git:
+  depth: 1
+  quiet: true
+  submodules: false
+
+notifications:
+  email: false
+
+env:
+  global:
+    - GO111MODULE=on
+    - GOPROXY=https://proxy.golang.org
+    - BRANCH="${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+
+before_install:
+  - echo "current branch is ${BRANCH}"
+  - if [ "${BRANCH}" == "master" ]; then travis_terminate 0; fi
+
+stages:
+  - name: Tests
+
+jobs:
+  include:
+    - stage: "Tests"
+      name: "Linters"
+      install: go install github.com/golangci/golangci-lint/cmd/golangci-lint
+      script: make lint
+
+    - stage: "Tests"
+      name: "Unit tests"
+      install: go mod download
+      script: make test

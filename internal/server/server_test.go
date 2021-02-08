@@ -9,6 +9,7 @@ import (
 )
 
 func TestRotatorServer_AddBannerToSlot(t *testing.T) {
+	t.Skip(true)
 	a := app.App{}
 	config := configuration.GRPCConf{
 		Host: "127.0.0.1",

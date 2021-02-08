@@ -1,7 +1,6 @@
 package configuration
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -13,11 +12,11 @@ type test struct {
 }
 
 func TestConfiguration(t *testing.T) {
-	t.Run("Zero N and M", func(t *testing.T) {
+	t.Run("errors", func(t *testing.T) {
 		for _, tst := range [...]test{
 			{
 				path: "",
-				err:  errors.New("path empty"),
+				err: emptyPath,
 			},
 		} {
 			_, err := New(tst.path)
@@ -25,10 +24,24 @@ func TestConfiguration(t *testing.T) {
 		}
 	})
 
-	t.Run("Zero N and M", func(t *testing.T) {
+	t.Run("wrong path", func(t *testing.T) {
 		for _, tst := range [...]test{
 			{
-				path: "./test/config_test.toml",
+				path: "./wrong_path/config_test.toml",
+			},
+			{
+				path: "wrong_path",
+			},
+		} {
+			_, err := New(tst.path)
+			require.Error(t, err)
+		}
+	})
+
+	t.Run("pass result", func(t *testing.T) {
+		for _, tst := range [...]test{
+			{
+				path: "./testdata/config_test.toml",
 			},
 		} {
 			c, err := New(tst.path)

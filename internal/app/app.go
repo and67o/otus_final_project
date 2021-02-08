@@ -3,39 +3,37 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/and67o/otus_project/internal/interfaces"
 	"time"
 
-	"github.com/and67o/otus_project/internal/logger"
 	"github.com/and67o/otus_project/internal/model"
 	"github.com/and67o/otus_project/internal/multiarmedbandits"
-	rmq "github.com/and67o/otus_project/internal/queue"
 	server "github.com/and67o/otus_project/internal/server/pb"
-	"github.com/and67o/otus_project/internal/storage/sql"
 )
 
 type App struct {
-	Logger  logger.Interface
-	Storage sql.StorageAction
-	Queue   rmq.Queue
+	logger  interfaces.Logger
+	storage interfaces.Storage
+	queue   interfaces.Queue
 
 	server.UnimplementedBannerRotationServer
 }
 
-func New(storage sql.StorageAction, logger logger.Interface, queue rmq.Queue) *App {
+func New(storage interfaces.Storage, logger interfaces.Logger, queue interfaces.Queue) *App {
 	return &App{
-		Logger:  logger,
-		Storage: storage,
-		Queue:   queue,
+		logger:  logger,
+		storage: storage,
+		queue:   queue,
 	}
 }
 
-func (a *App) AddBanner(ctx context.Context, request *server.AddBannerRequest) (*server.AddBannerResponse, error) {
+func (a *App) AddBanner(_ context.Context, request *server.AddBannerRequest) (*server.AddBannerResponse, error) {
 	banner := model.BannerPlace{
 		BannerID: int(request.BannerId),
 		SlotID:   int(request.SlotId),
 	}
 
-	err := a.Storage.AddBanner(&banner)
+	err := a.storage.AddBanner(&banner)
 	if err != nil {
 		return nil, fmt.Errorf("add banner: %w", err)
 	}
@@ -43,13 +41,13 @@ func (a *App) AddBanner(ctx context.Context, request *server.AddBannerRequest) (
 	return &server.AddBannerResponse{}, nil
 }
 
-func (a *App) DeleteBanner(ctx context.Context, request *server.DeleteBannerRequest) (*server.DeleteBannerResponse, error) {
+func (a *App) DeleteBanner(_ context.Context, request *server.DeleteBannerRequest) (*server.DeleteBannerResponse, error) {
 	banner := model.BannerPlace{
 		BannerID: int(request.BannerId),
 		SlotID:   int(request.SlotId),
 	}
 
-	err := a.Storage.DeleteBanner(&banner)
+	err := a.storage.DeleteBanner(&banner)
 	if err != nil {
 		return nil, fmt.Errorf("delete banner: %w", err)
 	}
@@ -57,13 +55,13 @@ func (a *App) DeleteBanner(ctx context.Context, request *server.DeleteBannerRequ
 	return &server.DeleteBannerResponse{}, err
 }
 
-func (a *App) ClickBanner(ctx context.Context, request *server.ClickBannerRequest) (*server.ClickBannerResponse, error) {
-	err := a.Storage.IncClickCount(request.SlotId, request.GroupId, request.BannerId)
+func (a *App) ClickBanner(_ context.Context, request *server.ClickBannerRequest) (*server.ClickBannerResponse, error) {
+	err := a.storage.IncClickCount(request.SlotId, request.GroupId, request.BannerId)
 	if err != nil {
 		return nil, fmt.Errorf("click banner: %w", err)
 	}
 
-	err = a.Queue.Push(model.StatisticsEvent{
+	err = a.queue.Push(model.StatisticsEvent{
 		Type:     model.TypeClick,
 		IDSlot:   request.SlotId,
 		IDBanner: request.BannerId,
@@ -77,8 +75,8 @@ func (a *App) ClickBanner(ctx context.Context, request *server.ClickBannerReques
 	return &server.ClickBannerResponse{}, nil
 }
 
-func (a *App) ShowBanner(ctx context.Context, request *server.ShowBannerRequest) (*server.ShowBannerResponse, error) {
-	banners, err := a.Storage.Banners(request.SlotId, request.GroupId)
+func (a *App) ShowBanner(_ context.Context, request *server.ShowBannerRequest) (*server.ShowBannerResponse, error) {
+	banners, err := a.storage.Banners(request.SlotId, request.GroupId)
 
 	if err != nil {
 		return nil, fmt.Errorf("show banner: %w", err)
@@ -87,12 +85,12 @@ func (a *App) ShowBanner(ctx context.Context, request *server.ShowBannerRequest)
 	showBannerID := multiarmedbandits.Get(banners)
 
 	if showBannerID > 0 {
-		err = a.Storage.IncShowCount(request.SlotId, request.GroupId, showBannerID)
+		err = a.storage.IncShowCount(request.SlotId, request.GroupId, showBannerID)
 		if err != nil {
 			return nil, fmt.Errorf("increment count: %w", err)
 		}
 
-		err = a.Queue.Push(model.StatisticsEvent{
+		err = a.queue.Push(model.StatisticsEvent{
 			Type:     model.TypeShow,
 			IDSlot:   request.SlotId,
 			IDBanner: showBannerID,

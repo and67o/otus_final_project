@@ -2,6 +2,8 @@ package model
 
 import "time"
 
+type EventType int
+
 const TypeClick = 0
 const TypeShow = 1
 

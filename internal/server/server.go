@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/and67o/otus_project/internal/interfaces"
 	"google.golang.org/grpc"
 	"net"
 
@@ -22,12 +23,7 @@ type Server struct {
 	server    *grpc.Server
 }
 
-type GRPC interface {
-	Stop() error
-	Start(ctx context.Context) error
-}
-
-func New(app *app.App, config configuration.GRPCConf) GRPC {
+func New(app *app.App, config configuration.GRPCConf) interfaces.GRPC {
 	fmt.Println(net.JoinHostPort(config.Host, config.Port))
 	return &Server{
 		app:       app,

@@ -2,6 +2,7 @@ package sql
 
 import (
 	"fmt"
+	"github.com/and67o/otus_project/internal/interfaces"
 
 	"github.com/and67o/otus_project/internal/configuration"
 	"github.com/and67o/otus_project/internal/model"
@@ -13,19 +14,13 @@ type Storage struct {
 	db *sqlx.DB
 }
 
-type StorageAction interface {
-	AddBanner(b *model.BannerPlace) error
-	DeleteBanner(b *model.BannerPlace) error
-	Banners(slotID int64, groupID int64) ([]model.Banner, error)
-	IncShowCount(slotID int64, groupID int64, bannerID int64) error
-	IncClickCount(slotID int64, groupID int64, bannerID int64) error
-}
+
 
 const driverName = "mysql"
 const clickCount = "count_click"
 const showCount = "count_show"
 
-func New(config configuration.DBConf) (StorageAction, error) {
+func New(config configuration.DBConf) (interfaces.Storage, error) {
 	db, err := sqlx.Open(driverName, dataSourceName(config))
 	if err != nil {
 		return nil, fmt.Errorf("connect db: %w", err)

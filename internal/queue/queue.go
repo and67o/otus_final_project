@@ -4,28 +4,24 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/and67o/otus_project/internal/interfaces"
 	"time"
 
 	"github.com/and67o/otus_project/internal/configuration"
-	"github.com/and67o/otus_project/internal/logger"
 	"github.com/and67o/otus_project/internal/model"
 	"github.com/streadway/amqp"
 )
 
 type RabbitMQ struct {
-	logger     logger.Interface
+	logger     interfaces.Logger
 	connection *amqp.Connection
 	channel    *amqp.Channel
-}
-
-type Queue interface {
-	Push(event model.StatisticsEvent) error
 }
 
 const nameQueue = "banner_queue"
 const nameExchangeQueue = "banner_exchange_queue"
 
-func New(config configuration.RabbitMQ, logg logger.Interface) (*RabbitMQ, error) {
+func New(config configuration.RabbitMQ, logg interfaces.Logger) (*RabbitMQ, error) {
 	var err error
 
 	res := &RabbitMQ{

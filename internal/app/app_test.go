@@ -44,9 +44,9 @@ func TestBaseAction(t *testing.T) {
 	require.NoError(t, err)
 
 	app := App{
-		Logger:                            logg,
-		Storage:                           db,
-		Queue:                             r,
+		logger:                            logg,
+		storage:                           db,
+		queue:                             r,
 		UnimplementedBannerRotationServer: server.UnimplementedBannerRotationServer{},
 	}
 
