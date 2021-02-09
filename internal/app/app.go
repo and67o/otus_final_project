@@ -77,7 +77,6 @@ func (a *App) ClickBanner(_ context.Context, request *server.ClickBannerRequest)
 
 func (a *App) ShowBanner(_ context.Context, request *server.ShowBannerRequest) (*server.ShowBannerResponse, error) {
 	banners, err := a.storage.Banners(request.SlotId, request.GroupId)
-
 	if err != nil {
 		return nil, fmt.Errorf("show banner: %w", err)
 	}

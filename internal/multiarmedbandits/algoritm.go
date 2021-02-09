@@ -12,10 +12,10 @@ func Get(banners []model.Banner) int64 {
 	bannersCount := len(banners)
 
 	for _, banner := range banners {
-		count = score(banner.ClickCount, banner.ShowCount, bannersCount)
+		count = score(banner.CountClick, banner.CountShow, bannersCount)
 
 		if count > maxCount || bannersCount == 0 {
-			selectedBannerID = banner.ID
+			selectedBannerID = banner.IDBanner
 			maxCount = count
 		}
 	}

@@ -12,3 +12,4 @@ github.com/and67o/otus_project/internal/app.TestBaseAction
 	/var/www/golang/src/project/internal/app/app_test.go:77
 testing.tRunner
 	/root/sdk/go1.15.1/src/testing/testing.go:1108
+2021-02-08T14:13:37.409+0300	INFO	logger/logger.go:92	starting  server

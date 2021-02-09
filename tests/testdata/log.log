@@ -1,0 +1,78 @@
+2021-02-09T15:54:25.141+0300	ERROR	logger/logger.go:96	not push to queue:Exception (504) Reason: "channel/connection is not open"
+github.com/and67o/otus_project/internal/logger.Logger.Error
+	/var/www/golang/src/project/internal/logger/logger.go:96
+github.com/and67o/otus_project/internal/queue.(*RabbitMQ).Push
+	/var/www/golang/src/project/internal/queue/queue.go:82
+github.com/and67o/otus_project/internal/app.(*App).ShowBanner
+	/var/www/golang/src/project/internal/app/app.go:93
+github.com/and67o/otus_project/tests.(*TestCase).appTest
+	/var/www/golang/src/project/tests/app_test.go:155
+github.com/and67o/otus_project/tests.TestApp
+	/var/www/golang/src/project/tests/app_test.go:58
+testing.tRunner
+	/root/sdk/go1.15.1/src/testing/testing.go:1108
+2021-02-09T15:54:55.360+0300	ERROR	logger/logger.go:96	not push to queue:Exception (504) Reason: "channel/connection is not open"
+github.com/and67o/otus_project/internal/logger.Logger.Error
+	/var/www/golang/src/project/internal/logger/logger.go:96
+github.com/and67o/otus_project/internal/queue.(*RabbitMQ).Push
+	/var/www/golang/src/project/internal/queue/queue.go:82
+github.com/and67o/otus_project/internal/app.(*App).ShowBanner
+	/var/www/golang/src/project/internal/app/app.go:93
+github.com/and67o/otus_project/tests.(*TestCase).appTest
+	/var/www/golang/src/project/tests/app_test.go:155
+github.com/and67o/otus_project/tests.TestApp
+	/var/www/golang/src/project/tests/app_test.go:58
+testing.tRunner
+	/root/sdk/go1.15.1/src/testing/testing.go:1108
+2021-02-09T15:55:31.356+0300	ERROR	logger/logger.go:96	not push to queue:Exception (504) Reason: "channel/connection is not open"
+github.com/and67o/otus_project/internal/logger.Logger.Error
+	/var/www/golang/src/project/internal/logger/logger.go:96
+github.com/and67o/otus_project/internal/queue.(*RabbitMQ).Push
+	/var/www/golang/src/project/internal/queue/queue.go:82
+github.com/and67o/otus_project/internal/app.(*App).ShowBanner
+	/var/www/golang/src/project/internal/app/app.go:93
+github.com/and67o/otus_project/tests.(*TestCase).appTest
+	/var/www/golang/src/project/tests/app_test.go:155
+github.com/and67o/otus_project/tests.TestApp
+	/var/www/golang/src/project/tests/app_test.go:58
+testing.tRunner
+	/root/sdk/go1.15.1/src/testing/testing.go:1108
+2021-02-09T15:56:42.066+0300	ERROR	logger/logger.go:96	not push to queue:Exception (504) Reason: "channel/connection is not open"
+github.com/and67o/otus_project/internal/logger.Logger.Error
+	/var/www/golang/src/project/internal/logger/logger.go:96
+github.com/and67o/otus_project/internal/queue.(*RabbitMQ).Push
+	/var/www/golang/src/project/internal/queue/queue.go:82
+github.com/and67o/otus_project/internal/app.(*App).ShowBanner
+	/var/www/golang/src/project/internal/app/app.go:93
+github.com/and67o/otus_project/tests.(*TestCase).appTest
+	/var/www/golang/src/project/tests/app_test.go:155
+github.com/and67o/otus_project/tests.TestApp
+	/var/www/golang/src/project/tests/app_test.go:58
+testing.tRunner
+	/root/sdk/go1.15.1/src/testing/testing.go:1108
+2021-02-09T16:10:28.431+0300	ERROR	logger/logger.go:96	not push to queue:Exception (504) Reason: "channel/connection is not open"
+github.com/and67o/otus_project/internal/logger.Logger.Error
+	/var/www/golang/src/project/internal/logger/logger.go:96
+github.com/and67o/otus_project/internal/queue.(*RabbitMQ).Push
+	/var/www/golang/src/project/internal/queue/queue.go:86
+github.com/and67o/otus_project/internal/app.(*App).ShowBanner
+	/var/www/golang/src/project/internal/app/app.go:92
+github.com/and67o/otus_project/tests.(*TestCase).appTest
+	/var/www/golang/src/project/tests/app_test.go:159
+github.com/and67o/otus_project/tests.TestApp
+	/var/www/golang/src/project/tests/app_test.go:61
+testing.tRunner
+	/root/sdk/go1.15.1/src/testing/testing.go:1108
+2021-02-09T16:14:16.269+0300	ERROR	logger/logger.go:96	not push to queue:Exception (504) Reason: "channel/connection is not open"
+github.com/and67o/otus_project/internal/logger.Logger.Error
+	/var/www/golang/src/project/internal/logger/logger.go:96
+github.com/and67o/otus_project/internal/queue.(*RabbitMQ).Push
+	/var/www/golang/src/project/internal/queue/queue.go:86
+github.com/and67o/otus_project/internal/app.(*App).ShowBanner
+	/var/www/golang/src/project/internal/app/app.go:92
+github.com/and67o/otus_project/tests.(*TestCase).appTest
+	/var/www/golang/src/project/tests/app_test.go:159
+github.com/and67o/otus_project/tests.TestApp
+	/var/www/golang/src/project/tests/app_test.go:61
+testing.tRunner
+	/root/sdk/go1.15.1/src/testing/testing.go:1108

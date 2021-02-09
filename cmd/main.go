@@ -8,7 +8,7 @@ import (
 	"github.com/and67o/otus_project/internal/logger"
 	rmq "github.com/and67o/otus_project/internal/queue"
 	"github.com/and67o/otus_project/internal/server"
-	"github.com/and67o/otus_project/internal/storage/sql"
+	storage2 "github.com/and67o/otus_project/internal/storage"
 	"log"
 	"os"
 	"os/signal"
@@ -28,7 +28,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	storage, err := sql.New(config.DB)
+	storage, err := storage2.New(config.DB)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -41,10 +41,19 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	queue, err := rmq.New(config.Rabbit, logg)
+	queue, err := rmq.New(config.Rabbit)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	err = queue.OpenChanel()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() {
+		err = queue.CloseChannel()
+		log.Fatal(err)
+	}()
 
 	rotator := app.New(storage, logg, queue)
 
@@ -60,8 +69,14 @@ func main() {
 
 		err := GRPCServer.Stop()
 		if err != nil {
-			logg.Error("stop server" + err.Error())
+			logg.Error("stop server: " + err.Error())
 		}
+
+		err = queue.CloseConnection()
+		if err != nil {
+			logg.Error("queue error: " + err.Error())
+		}
+
 	}()
 
 	logg.Info("starting  server")

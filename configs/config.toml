@@ -12,11 +12,18 @@ log_trace_on = false
 log_prod_on = false
 
 [server]
-server_host="127.0.0.1"
-server_port=50051
+server_host = "127.0.0.1"
+server_port = 50051
 
 [rabbit]
 rabbit_user = "guest"
 rabbit_password = "guest"
 rabbit_host = "127.0.0.1"
 rabbit_port = 5672
+rabbit_durable = true
+rabbit_autodelete = false
+rabbit_no_wait = false
+rabbit_internal = false
+rabbit_name = "banner_exchange_queue"
+rabbit_kind = "direct"
+rabbit_key = "banner"

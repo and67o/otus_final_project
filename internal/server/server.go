@@ -12,7 +12,7 @@ import (
 
 	"github.com/and67o/otus_project/internal/app"
 	"github.com/and67o/otus_project/internal/configuration"
-	server "github.com/and67o/otus_project/internal/server/pb"
+	pb "github.com/and67o/otus_project/internal/server/pb"
 )
 
 const network = "tcp"
@@ -50,13 +50,13 @@ func (s *Server) Start(ctx context.Context) error {
 
 	serverGRPC := grpc.NewServer()
 	s.server = serverGRPC
-	server.RegisterBannerRotationServer(serverGRPC, s.app)
+	pb.RegisterBannerRotationServer(serverGRPC, s.app)
 
 	err = serverGRPC.Serve(l)
 	if err != nil {
 		return err
 	}
 
-	<-ctx.Done()
+	//<-ctx.Done()
 	return nil
 }

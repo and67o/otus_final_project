@@ -1,101 +1,89 @@
 package rmq
 
 import (
-	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/and67o/otus_project/internal/interfaces"
-	"time"
-
 	"github.com/and67o/otus_project/internal/configuration"
+	"github.com/and67o/otus_project/internal/interfaces"
 	"github.com/and67o/otus_project/internal/model"
 	"github.com/streadway/amqp"
 )
 
 type RabbitMQ struct {
-	logger     interfaces.Logger
-	connection *amqp.Connection
-	channel    *amqp.Channel
+	configuration configuration.RabbitMQ
+	connection    *amqp.Connection
+	channel       *amqp.Channel
 }
 
-const nameQueue = "banner_queue"
-const nameExchangeQueue = "banner_exchange_queue"
+func New(config configuration.RabbitMQ) (interfaces.Queue, error) {
+	var r RabbitMQ
 
-func New(config configuration.RabbitMQ, logg interfaces.Logger) (*RabbitMQ, error) {
-	var err error
-
-	res := &RabbitMQ{
-		logger: logg,
-	}
-
-	_, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-
-	res.connection, err = amqp.Dial(getURL(config))
+	connection, err := amqp.Dial(getURL(config))
 	if err != nil {
-		res.logger.Fatal("fail Rabbit connection:" + err.Error())
-
-		return nil, err
+		return nil, errors.New("connection error:" + err.Error())
 	}
 
-	res.channel, err = res.connection.Channel()
-	if err != nil {
-		res.logger.Fatal("fail to open channel for Rabbit:" + err.Error())
+	r.configuration = config
+	r.connection = connection
 
-		return nil, err
-	}
-	_, err = res.channel.QueueDeclare(
-		nameQueue,
-		false,
-		false,
-		false,
-		false,
-		nil,
-	)
-	if err != nil {
-		res.logger.Fatal("fail create queue for Rabbit")
-
-		return nil, err
-	}
-
-	return res, nil
+	return &r, nil
 }
 
 func (q *RabbitMQ) Push(event model.StatisticsEvent) error {
 	eventBytes, err := json.Marshal(event)
 	if err != nil {
-		q.logger.Error("fail marshal error:" + err.Error())
-		return err
+		return errors.New("fail marshal error:" + err.Error())
 	}
 
 	err = q.channel.Publish(
-		nameExchangeQueue,
-		nameQueue,
+		q.configuration.Name,
+		q.configuration.Key,
 		false,
 		false,
 		amqp.Publishing{
-			ContentType: "application/json",
-			Body:        eventBytes,
+			ContentType:     "application/json",
+			Body:            eventBytes,
+			ContentEncoding: "utf8",
 		},
 	)
 	if err != nil {
-		q.logger.Error("not push to queue:" + err.Error())
-		return err
+		return errors.New("not push to queue:" + err.Error())
 	}
 
-	return err
+	return nil
 }
 
-func (q *RabbitMQ) Stop() {
-	err := q.channel.Close()
+func (q *RabbitMQ) CloseConnection() error {
+	return q.connection.Close()
+}
+
+func (q *RabbitMQ) OpenChanel() error {
+	channel, err := q.connection.Channel()
 	if err != nil {
-		q.logger.Fatal("fail to close channel:" + err.Error())
+		return fmt.Errorf("fail to open channel for Rabbit: %w", err)
 	}
 
-	err = q.connection.Close()
+	err = channel.ExchangeDeclare(
+		q.configuration.Name,
+		q.configuration.Kind,
+		q.configuration.Durable,
+		q.configuration.AutoDelete,
+		q.configuration.Internal,
+		q.configuration.NoWait,
+		nil,
+	)
+
 	if err != nil {
-		q.logger.Fatal("fail to close connection" + err.Error())
+		return fmt.Errorf("fail create queue for Rabbit: %w", err)
 	}
+	q.channel = channel
+
+	return nil
+}
+
+func (q *RabbitMQ) CloseChannel() error {
+	return q.channel.Close()
 }
 
 func getURL(config configuration.RabbitMQ) string {
