@@ -9,7 +9,6 @@ linters:
     - gochecknoinits
     - godox
     - goerr113
-    - exhaustivestruct
     - gomnd
     - lll
     - nakedret

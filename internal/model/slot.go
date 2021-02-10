@@ -1,6 +1,6 @@
 package model
 
 type Slot struct {
-	Id int
+	ID          int
 	Description string
 }

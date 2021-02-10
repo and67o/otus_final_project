@@ -5,30 +5,28 @@ package server
 import (
 	"context"
 	"errors"
-	"fmt"
-	"github.com/and67o/otus_project/internal/interfaces"
 	"google.golang.org/grpc"
 	"net"
 
 	"github.com/and67o/otus_project/internal/app"
 	"github.com/and67o/otus_project/internal/configuration"
+	"github.com/and67o/otus_project/internal/interfaces"
 	pb "github.com/and67o/otus_project/internal/server/pb"
 )
 
 const network = "tcp"
 
 type Server struct {
-	app       *app.App
-	addr      string
-	server    *grpc.Server
+	addr   string
+	app    *app.App
+	server *grpc.Server
 }
 
 func New(app *app.App, config configuration.GRPCConf) interfaces.GRPC {
-	fmt.Println(net.JoinHostPort(config.Host, config.Port))
 	return &Server{
-		app:       app,
-		addr:      net.JoinHostPort(config.Host, config.Port),
-		server:    nil,
+		app:    app,
+		addr:   net.JoinHostPort(config.Host, config.Port),
+		server: nil,
 	}
 }
 
@@ -57,6 +55,7 @@ func (s *Server) Start(ctx context.Context) error {
 		return err
 	}
 
-	//<-ctx.Done()
+	<-ctx.Done()
+
 	return nil
 }

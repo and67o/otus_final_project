@@ -7,15 +7,13 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
-	emptyPath = errors.New("path empty")
-)
+var errEmptyPath = errors.New("path empty")
 
 func New(path string) (Config, error) {
 	var configuration Config
 
 	if path == "" {
-		return configuration, emptyPath
+		return configuration, errEmptyPath
 	}
 
 	viper.SetConfigFile(path)

@@ -1,9 +1,10 @@
 package logger
 
 import (
+	"testing"
+
 	"github.com/and67o/otus_project/internal/configuration"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestLogger(t *testing.T) {

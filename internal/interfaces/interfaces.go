@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"context"
+
 	"github.com/and67o/otus_project/internal/model"
 )
 

@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/and67o/otus_project/internal/configuration"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-
-	"github.com/and67o/otus_project/internal/configuration"
 )
 
 type Logger struct {
@@ -24,9 +23,7 @@ const (
 	outPut = "stderr"
 )
 
-var (
-	notFoundError = errors.New("not found log level")
-)
+var errNotFound = errors.New("not found log level")
 
 func New(configuration configuration.LoggerConf) (*Logger, error) {
 	var logger = new(Logger)
@@ -68,7 +65,7 @@ func setLevel(level string) (*zap.AtomicLevel, error) {
 	case levelWarn:
 		l = zapcore.WarnLevel
 	default:
-		return nil, notFoundError
+		return nil, errNotFound
 	}
 
 	lvl = zap.NewAtomicLevelAt(l)

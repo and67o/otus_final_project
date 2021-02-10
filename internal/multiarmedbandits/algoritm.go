@@ -25,5 +25,6 @@ func Get(banners []model.Banner) int64 {
 
 func score(countClick int64, countShow int64, bannersCount int) float64 {
 	value := float64(countClick) / float64(countShow)
+
 	return value + math.Sqrt((2*math.Log(float64(bannersCount)))/float64(countShow))
 }

@@ -14,9 +14,11 @@ type Storage struct {
 	db *sqlx.DB
 }
 
-const driverName = "mysql"
-const clickCount = "count_click"
-const showCount = "count_show"
+const (
+	driverName = "mysql"
+	clickCount = "count_click"
+	showCount  = "count_show"
+)
 
 func New(config configuration.DBConf) (interfaces.Storage, error) {
 	db, err := sqlx.Open(driverName, dataSourceName(config))
@@ -70,6 +72,9 @@ func (s *Storage) Banners(slotID int64, groupID int64) ([]model.Banner, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer func() {
+		_ = res.Close()
+	}()
 
 	for res.Next() {
 		var b model.Banner
@@ -139,9 +144,11 @@ func (s *Storage) GetStatistics(stat *model.Statistics) (*model.Statistics, erro
 	if err != nil {
 		return nil, err
 	}
+	defer func() {
+		_ = res.Close()
+	}()
 
 	for res.Next() {
-
 		err = res.Scan(&statistics.IDBanner,
 			&statistics.IDSlot,
 			&statistics.IDGroup,

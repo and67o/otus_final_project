@@ -28,15 +28,15 @@ type LoggerConf struct {
 }
 
 type RabbitMQ struct {
-	User string `mapstructure:"rabbit_user"`
-	Pass string `mapstructure:"rabbit_user"`
-	Host string `mapstructure:"rabbit_host"`
-	Port int    `mapstructure:"rabbit_port"`
-	Durable bool `mapstructure:"rabbit_durable"`
-	AutoDelete bool `mapstructure:"rabbit_autodelete"`
-	NoWait bool `mapstructure:"rabbit_no_wait"`
-	Internal bool `mapstructure:"rabbit_internal"`
-	Name string `mapstructure:"rabbit_name"`
-	Kind string `mapstructure:"rabbit_kind"`
-	Key string `mapstructure:"rabbit_key"`
+	User       string `mapstructure:"rabbit_user"`
+	Pass       string `mapstructure:"rabbit_user"`
+	Host       string `mapstructure:"rabbit_host"`
+	Port       int    `mapstructure:"rabbit_port"`
+	Durable    bool   `mapstructure:"rabbit_durable"`
+	AutoDelete bool   `mapstructure:"rabbit_autodelete"`
+	NoWait     bool   `mapstructure:"rabbit_no_wait"`
+	Internal   bool   `mapstructure:"rabbit_internal"`
+	Name       string `mapstructure:"rabbit_name"`
+	Kind       string `mapstructure:"rabbit_kind"`
+	Key        string `mapstructure:"rabbit_key"`
 }

@@ -5,6 +5,7 @@ import (
 	"flag"
 	"github.com/and67o/otus_project/internal/app"
 	"github.com/and67o/otus_project/internal/configuration"
+	"github.com/and67o/otus_project/internal/interfaces"
 	"github.com/and67o/otus_project/internal/logger"
 	rmq "github.com/and67o/otus_project/internal/queue"
 	"github.com/and67o/otus_project/internal/server"
@@ -59,29 +60,30 @@ func main() {
 
 	GRPCServer := server.New(rotator, config.Server)
 
-	go func() {
-		signals := make(chan os.Signal, 1)
-		signal.Notify(signals, os.Interrupt)
-
-		<-signals
-		signal.Stop(signals)
-		cancel()
-
-		err := GRPCServer.Stop()
-		if err != nil {
-			logg.Error("stop server: " + err.Error())
-		}
-
-		err = queue.CloseConnection()
-		if err != nil {
-			logg.Error("queue error: " + err.Error())
-		}
-
-	}()
+	go watchSignals(cancel, GRPCServer, logg, queue)
 
 	logg.Info("starting  server")
 	err = GRPCServer.Start(ctx)
 	if err != nil {
 		logg.Fatal("failed to start server: " + err.Error())
+	}
+}
+
+func watchSignals(cancel context.CancelFunc, grpc interfaces.GRPC, logg interfaces.Logger, queue interfaces.Queue) {
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt)
+
+	<-signals
+	signal.Stop(signals)
+	cancel()
+
+	err := grpc.Stop()
+	if err != nil {
+		logg.Error("stop server: " + err.Error())
+	}
+
+	err = queue.CloseConnection()
+	if err != nil {
+		logg.Error("queue error: " + err.Error())
 	}
 }

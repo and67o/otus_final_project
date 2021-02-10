@@ -42,18 +42,17 @@ var configLogger = configuration.LoggerConf{
 }
 
 var rabbitConf = configuration.RabbitMQ{
-	User: "guest",
-	Pass: "guest",
-	Host: "127.0.0.1",
-	Port: 5672,
-	Durable: true,
+	User:       "guest",
+	Pass:       "guest",
+	Host:       "127.0.0.1",
+	Port:       5672,
+	Durable:    true,
 	AutoDelete: false,
-	NoWait: false,
-	Internal: false,
-	Name: "banner_exchange_queue",
-	Kind: "direct",
-	Key:"banner",
-
+	NoWait:     false,
+	Internal:   false,
+	Name:       "banner_exchange_queue",
+	Kind:       "direct",
+	Key:        "banner",
 }
 
 func TestApp(t *testing.T) {
@@ -68,7 +67,7 @@ func TestApp(t *testing.T) {
 		_ = ts.queue.CloseChannel()
 	}()
 
-	ts.appTest(t, ctx)
+	ts.appTest(ctx, t)
 
 	ts.appDown(t)
 }
@@ -112,20 +111,22 @@ func getTestBanners() []model.BannerPlace {
 }
 
 func BannersUp(t *testing.T, storage interfaces.Storage) {
-	for _, banner := range getTestBanners() {
-		err := storage.AddBanner(&banner)
+	banners := getTestBanners()
+	for i := range getTestBanners() {
+		err := storage.AddBanner(&banners[i])
 		require.NoError(t, err)
 	}
 }
 
 func StatisticsUp(t *testing.T, storage interfaces.Storage) {
-	for _, stat := range getTestStatistics() {
-		err := storage.AddStatistics(&stat)
+	statistics := getTestStatistics()
+	for i := range statistics {
+		err := storage.AddStatistics(&statistics[i])
 		require.NoError(t, err)
 	}
 }
 
-func (ts *TestCase) appTest(t *testing.T, ctx context.Context) {
+func (ts *TestCase) appTest(ctx context.Context, t *testing.T) {
 	var err error
 
 	// уже есть такой баннер
@@ -181,8 +182,9 @@ func (ts *TestCase) appDown(t *testing.T) {
 }
 
 func BannerDown(t *testing.T, storage interfaces.Storage) {
-	for _, banner := range getTestBanners() {
-		err := storage.DeleteBanner(&banner)
+	banners := getTestBanners()
+	for i := range getTestBanners() {
+		err := storage.DeleteBanner(&banners[i])
 		require.NoError(t, err)
 	}
 }
@@ -205,8 +207,9 @@ func getTestStatistics() []model.Statistics {
 }
 
 func StatisticsDown(t *testing.T, storage interfaces.Storage) {
-	for _, stat := range getTestStatistics() {
-		err := storage.DeleteStatistics(&stat)
+	statistics := getTestStatistics()
+	for i := range statistics {
+		err := storage.DeleteStatistics(&statistics[i])
 		require.NoError(t, err)
 	}
 }

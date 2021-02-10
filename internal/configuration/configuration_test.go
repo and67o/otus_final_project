@@ -16,7 +16,7 @@ func TestConfiguration(t *testing.T) {
 		for _, tst := range [...]test{
 			{
 				path: "",
-				err: emptyPath,
+				err:  errEmptyPath,
 			},
 		} {
 			_, err := New(tst.path)
