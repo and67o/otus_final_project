@@ -14,16 +14,18 @@ type Queue interface {
 }
 
 type Storage interface {
-	AddBanner(b *model.BannerPlace) error
-	DeleteBanner(b *model.BannerPlace) error
+	AddBanner(ctx context.Context, b *model.BannerPlace) error
+	DeleteBanner(ctx context.Context, b *model.BannerPlace) error
 
-	Banners(slotID int64, groupID int64) ([]model.Banner, error)
-	IncShowCount(slotID int64, groupID int64, bannerID int64) error
-	IncClickCount(slotID int64, groupID int64, bannerID int64) error
+	Banners(ctx context.Context, slotID int64, groupID int64) ([]model.Banner, error)
+	IncShowCount(ctx context.Context, slotID int64, groupID int64, bannerID int64) error
+	IncClickCount(ctx context.Context, slotID int64, groupID int64, bannerID int64) error
 
-	AddStatistics(stat *model.Statistics) error
-	DeleteStatistics(stat *model.Statistics) error
-	GetStatistics(stat *model.Statistics) (*model.Statistics, error)
+	AddStatistics(ctx context.Context, stat *model.Statistics) error
+	DeleteStatistics(ctx context.Context, stat *model.Statistics) error
+	GetStatistics(ctx context.Context, stat *model.Statistics) (*model.Statistics, error)
+
+	UpdateStatus(ctx context.Context, status model.BannerStatus, b *model.BannerPlace) error
 }
 
 type Logger interface {

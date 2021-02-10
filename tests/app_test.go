@@ -59,8 +59,6 @@ var rabbitConf = configuration.RabbitMQ{
 func TestApp(t *testing.T) {
 	ts := getApp(t)
 
-	ts.appUp(t)
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	defer func() {
@@ -68,9 +66,11 @@ func TestApp(t *testing.T) {
 		_ = ts.queue.CloseChannel()
 	}()
 
+	ts.appUp(t, ctx)
+
 	ts.appTest(ctx, t)
 
-	ts.appDown(t)
+	ts.appDown(t, ctx)
 }
 
 func getApp(t *testing.T) *TestCase {
@@ -94,9 +94,9 @@ func getApp(t *testing.T) *TestCase {
 	return &ts
 }
 
-func (ts *TestCase) appUp(t *testing.T) {
-	BannersUp(t, ts.storage)
-	StatisticsUp(t, ts.storage)
+func (ts *TestCase) appUp(t *testing.T, ctx context.Context) {
+	BannersUp(t, ctx, ts.storage)
+	StatisticsUp(t, ctx, ts.storage)
 }
 
 func getTestBanners() []model.BannerPlace {
@@ -111,18 +111,18 @@ func getTestBanners() []model.BannerPlace {
 	}
 }
 
-func BannersUp(t *testing.T, storage interfaces.Storage) {
+func BannersUp(t *testing.T, ctx context.Context, storage interfaces.Storage) {
 	banners := getTestBanners()
 	for i := range getTestBanners() {
-		err := storage.AddBanner(&banners[i])
+		err := storage.AddBanner(ctx, &banners[i])
 		require.NoError(t, err)
 	}
 }
 
-func StatisticsUp(t *testing.T, storage interfaces.Storage) {
+func StatisticsUp(t *testing.T, ctx context.Context, storage interfaces.Storage) {
 	statistics := getTestStatistics()
 	for i := range statistics {
-		err := storage.AddStatistics(&statistics[i])
+		err := storage.AddStatistics(ctx, &statistics[i])
 		require.NoError(t, err)
 	}
 }
@@ -142,7 +142,13 @@ func (ts *TestCase) appTest(ctx context.Context, t *testing.T) {
 	_, err = ts.app.DeleteBanner(ctx, &pb.DeleteBannerRequest{SlotId: 1, BannerId: 1})
 	require.NoError(t, err)
 
-	statBefore, err := ts.storage.GetStatistics(&exampleStatistics)
+	err = ts.storage.DeleteBanner(ctx, &model.BannerPlace{
+		BannerID: 1,
+		SlotID:   1,
+	})
+	require.NoError(t, err)
+
+	statBefore, err := ts.storage.GetStatistics(ctx, &exampleStatistics)
 	require.NoError(t, err)
 
 	// нажать на баннер
@@ -154,7 +160,7 @@ func (ts *TestCase) appTest(ctx context.Context, t *testing.T) {
 	require.NoError(t, err)
 
 	// проверить клик
-	statAfterClick, err := ts.storage.GetStatistics(&exampleStatistics)
+	statAfterClick, err := ts.storage.GetStatistics(ctx, &exampleStatistics)
 	require.NoError(t, err)
 
 	require.Equal(t, statBefore.IDBanner, statAfterClick.IDBanner)
@@ -171,21 +177,21 @@ func (ts *TestCase) appTest(ctx context.Context, t *testing.T) {
 	require.Equal(t, response.BannerId, int64(3))
 
 	// проверить показы
-	statAfterShow, err := ts.storage.GetStatistics(&exampleStatistics)
+	statAfterShow, err := ts.storage.GetStatistics(ctx, &exampleStatistics)
 	require.NoError(t, err)
 
 	require.Equal(t, statBefore.CountShow+1, statAfterShow.CountShow)
 }
 
-func (ts *TestCase) appDown(t *testing.T) {
-	BannerDown(t, ts.storage)
-	StatisticsDown(t, ts.storage)
+func (ts *TestCase) appDown(t *testing.T, ctx context.Context) {
+	BannerDown(t, ctx, ts.storage)
+	StatisticsDown(t, ctx, ts.storage)
 }
 
-func BannerDown(t *testing.T, storage interfaces.Storage) {
+func BannerDown(t *testing.T, ctx context.Context, storage interfaces.Storage) {
 	banners := getTestBanners()
-	for i := range getTestBanners() {
-		err := storage.DeleteBanner(&banners[i])
+	for i := range banners {
+		err := storage.DeleteBanner(ctx, &banners[i])
 		require.NoError(t, err)
 	}
 }
@@ -207,10 +213,10 @@ func getTestStatistics() []model.Statistics {
 	}
 }
 
-func StatisticsDown(t *testing.T, storage interfaces.Storage) {
+func StatisticsDown(t *testing.T, ctx context.Context, storage interfaces.Storage) {
 	statistics := getTestStatistics()
 	for i := range statistics {
-		err := storage.DeleteStatistics(&statistics[i])
+		err := storage.DeleteStatistics(ctx, &statistics[i])
 		require.NoError(t, err)
 	}
 }

@@ -27,13 +27,13 @@ func New(storage interfaces.Storage, logger interfaces.Logger, queue interfaces.
 	}
 }
 
-func (a *App) AddBanner(_ context.Context, request *server.AddBannerRequest) (*server.AddBannerResponse, error) {
+func (a *App) AddBanner(ctx context.Context, request *server.AddBannerRequest) (*server.AddBannerResponse, error) {
 	banner := model.BannerPlace{
 		BannerID: int(request.BannerId),
 		SlotID:   int(request.SlotId),
 	}
 
-	err := a.storage.AddBanner(&banner)
+	err := a.storage.AddBanner(ctx, &banner)
 	if err != nil {
 		return nil, fmt.Errorf("add banner: %w", err)
 	}
@@ -41,13 +41,13 @@ func (a *App) AddBanner(_ context.Context, request *server.AddBannerRequest) (*s
 	return &server.AddBannerResponse{}, nil
 }
 
-func (a *App) DeleteBanner(_ context.Context, request *server.DeleteBannerRequest) (*server.DeleteBannerResponse, error) {
+func (a *App) DeleteBanner(ctx context.Context, request *server.DeleteBannerRequest) (*server.DeleteBannerResponse, error) {
 	banner := model.BannerPlace{
 		BannerID: int(request.BannerId),
 		SlotID:   int(request.SlotId),
 	}
 
-	err := a.storage.DeleteBanner(&banner)
+	err := a.storage.UpdateStatus(ctx, model.BannerStatusDeleted, &banner)
 	if err != nil {
 		return nil, fmt.Errorf("delete banner: %w", err)
 	}
@@ -55,8 +55,8 @@ func (a *App) DeleteBanner(_ context.Context, request *server.DeleteBannerReques
 	return &server.DeleteBannerResponse{}, err
 }
 
-func (a *App) ClickBanner(_ context.Context, request *server.ClickBannerRequest) (*server.ClickBannerResponse, error) {
-	err := a.storage.IncClickCount(request.SlotId, request.GroupId, request.BannerId)
+func (a *App) ClickBanner(ctx context.Context, request *server.ClickBannerRequest) (*server.ClickBannerResponse, error) {
+	err := a.storage.IncClickCount(ctx, request.SlotId, request.GroupId, request.BannerId)
 	if err != nil {
 		return nil, fmt.Errorf("click banner: %w", err)
 	}
@@ -75,8 +75,8 @@ func (a *App) ClickBanner(_ context.Context, request *server.ClickBannerRequest)
 	return &server.ClickBannerResponse{}, nil
 }
 
-func (a *App) ShowBanner(_ context.Context, request *server.ShowBannerRequest) (*server.ShowBannerResponse, error) {
-	banners, err := a.storage.Banners(request.SlotId, request.GroupId)
+func (a *App) ShowBanner(ctx context.Context, request *server.ShowBannerRequest) (*server.ShowBannerResponse, error) {
+	banners, err := a.storage.Banners(ctx, request.SlotId, request.GroupId)
 	if err != nil {
 		return nil, fmt.Errorf("show banner: %w", err)
 	}
@@ -84,7 +84,7 @@ func (a *App) ShowBanner(_ context.Context, request *server.ShowBannerRequest) (
 	showBannerID := multiarmedbandits.Get(banners)
 
 	if showBannerID > 0 {
-		err = a.storage.IncShowCount(request.SlotId, request.GroupId, showBannerID)
+		err = a.storage.IncShowCount(ctx, request.SlotId, request.GroupId, showBannerID)
 		if err != nil {
 			return nil, fmt.Errorf("increment count: %w", err)
 		}

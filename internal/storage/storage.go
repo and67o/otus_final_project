@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/and67o/otus_project/internal/configuration"
@@ -44,8 +45,8 @@ func dataSourceName(config configuration.DBConf) string {
 	)
 }
 
-func (s *Storage) AddBanner(b *model.BannerPlace) error {
-	_, err := s.db.Exec("INSERT INTO rotation (id_banner, id_slot) VALUES (?, ?)",
+func (s *Storage) AddBanner(ctx context.Context, b *model.BannerPlace) error {
+	_, err := s.db.ExecContext(ctx, "INSERT INTO rotation (id_banner, id_slot) VALUES (?, ?)",
 		b.BannerID,
 		b.SlotID,
 	)
@@ -56,11 +57,19 @@ func (s *Storage) AddBanner(b *model.BannerPlace) error {
 	return nil
 }
 
-func (s *Storage) DeleteBanner(b *model.BannerPlace) error {
-	return s.updateStatus(model.BannerStatusDeleted, b)
+func (s *Storage) DeleteBanner(ctx context.Context, b *model.BannerPlace) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM rotation WHERE id_banner = ? AND id_slot = ?",
+		b.BannerID,
+		b.SlotID,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (s *Storage) Banners(slotID int64, groupID int64) ([]model.Banner, error) {
+func (s *Storage) Banners(ctx context.Context, slotID int64, groupID int64) ([]model.Banner, error) {
 	var banners []model.Banner
 
 	sql := fmt.Sprintf("SELECT r.id_banner, r.id_slot, s.count_show, s.count_click " +
@@ -68,7 +77,7 @@ func (s *Storage) Banners(slotID int64, groupID int64) ([]model.Banner, error) {
 		"LEFT join statistics s on r.id_banner = s.id_banner AND r.id_slot = s.id_slot and r.id_slot = ? " +
 		"WHERE s.id_group = ? AND r.status = ?",
 	)
-	res, err := s.db.Query(sql, slotID, groupID, model.BannerStatusActive)
+	res, err := s.db.QueryContext(ctx, sql, slotID, groupID, model.BannerStatusActive)
 	if err != nil {
 		return nil, err
 	}
@@ -97,16 +106,16 @@ func (s *Storage) Banners(slotID int64, groupID int64) ([]model.Banner, error) {
 	return banners, nil
 }
 
-func (s *Storage) IncShowCount(slotID int64, groupID int64, bannerID int64) error {
-	return s.incCount(slotID, groupID, bannerID, showCount)
+func (s *Storage) IncShowCount(ctx context.Context, slotID int64, groupID int64, bannerID int64) error {
+	return s.incCount(ctx, slotID, groupID, bannerID, showCount)
 }
 
-func (s *Storage) IncClickCount(slotID int64, groupID int64, bannerID int64) error {
-	return s.incCount(slotID, groupID, bannerID, clickCount)
+func (s *Storage) IncClickCount(ctx context.Context, slotID int64, groupID int64, bannerID int64) error {
+	return s.incCount(ctx, slotID, groupID, bannerID, clickCount)
 }
 
-func (s *Storage) AddStatistics(stat *model.Statistics) error {
-	_, err := s.db.Exec("INSERT INTO statistics (id_slot, id_banner, id_group, count_click, count_show) VALUES (?, ?, ?, ?, ?)",
+func (s *Storage) AddStatistics(ctx context.Context, stat *model.Statistics) error {
+	_, err := s.db.ExecContext(ctx, "INSERT INTO statistics (id_slot, id_banner, id_group, count_click, count_show) VALUES (?, ?, ?, ?, ?)",
 		stat.IDSlot,
 		stat.IDBanner,
 		stat.IDGroup,
@@ -120,8 +129,8 @@ func (s *Storage) AddStatistics(stat *model.Statistics) error {
 	return nil
 }
 
-func (s *Storage) DeleteStatistics(stat *model.Statistics) error {
-	_, err := s.db.Exec("DELETE FROM statistics WHERE id_banner = ? AND id_slot = ? AND id_group = ?",
+func (s *Storage) DeleteStatistics(ctx context.Context, stat *model.Statistics) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM statistics WHERE id_banner = ? AND id_slot = ? AND id_group = ?",
 		stat.IDBanner,
 		stat.IDSlot,
 		stat.IDGroup,
@@ -133,10 +142,10 @@ func (s *Storage) DeleteStatistics(stat *model.Statistics) error {
 	return nil
 }
 
-func (s *Storage) GetStatistics(stat *model.Statistics) (*model.Statistics, error) {
+func (s *Storage) GetStatistics(ctx context.Context, stat *model.Statistics) (*model.Statistics, error) {
 	var statistics model.Statistics
 
-	res, err := s.db.Query("SELECT id_banner, id_slot, id_group, count_show, count_click FROM statistics WHERE id_banner = ? AND id_slot = ? AND id_group = ?",
+	res, err := s.db.QueryContext(ctx, "SELECT id_banner, id_slot, id_group, count_show, count_click FROM statistics WHERE id_banner = ? AND id_slot = ? AND id_group = ?",
 		stat.IDBanner,
 		stat.IDSlot,
 		stat.IDGroup,
@@ -163,11 +172,11 @@ func (s *Storage) GetStatistics(stat *model.Statistics) (*model.Statistics, erro
 	return &statistics, nil
 }
 
-func (s *Storage) incCount(slotID int64, groupID int64, bannerID int64, value string) error {
+func (s *Storage) incCount(ctx context.Context, slotID int64, groupID int64, bannerID int64, value string) error {
 	sql := fmt.Sprintf("INSERT INTO statistics (id_slot, id_banner, id_group, %s) "+
 		"VALUES (?, ?, ?, 1) "+
 		"ON DUPLICATE KEY UPDATE %s = %s + 1", value, value, value)
-	_, err := s.db.Exec(sql, slotID, bannerID, groupID)
+	_, err := s.db.ExecContext(ctx, sql, slotID, bannerID, groupID)
 	if err != nil {
 		return err
 	}
@@ -175,8 +184,8 @@ func (s *Storage) incCount(slotID int64, groupID int64, bannerID int64, value st
 	return nil
 }
 
-func (s *Storage) updateStatus(status model.BannerStatus, b *model.BannerPlace) error {
-	_, err := s.db.Exec("UPDATE rotation set status = ? WHERE id_banner = ? AND id_slot = ?",
+func (s *Storage) UpdateStatus(ctx context.Context, status model.BannerStatus, b *model.BannerPlace) error {
+	_, err := s.db.ExecContext(ctx, "UPDATE rotation set status = ? WHERE id_banner = ? AND id_slot = ?",
 		status,
 		b.BannerID,
 		b.SlotID,
