@@ -2,6 +2,8 @@ package tests
 
 import (
 	"context"
+	"testing"
+
 	"github.com/and67o/otus_project/internal/app"
 	"github.com/and67o/otus_project/internal/configuration"
 	"github.com/and67o/otus_project/internal/interfaces"
@@ -11,7 +13,6 @@ import (
 	pb "github.com/and67o/otus_project/internal/server/pb"
 	storage2 "github.com/and67o/otus_project/internal/storage"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 type TestCase struct {

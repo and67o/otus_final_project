@@ -3,9 +3,9 @@ package app
 import (
 	"context"
 	"fmt"
-	"github.com/and67o/otus_project/internal/interfaces"
 	"time"
 
+	"github.com/and67o/otus_project/internal/interfaces"
 	"github.com/and67o/otus_project/internal/model"
 	"github.com/and67o/otus_project/internal/multiarmedbandits"
 	server "github.com/and67o/otus_project/internal/server/pb"

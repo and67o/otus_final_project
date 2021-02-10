@@ -2,9 +2,9 @@ package storage
 
 import (
 	"fmt"
-	"github.com/and67o/otus_project/internal/interfaces"
 
 	"github.com/and67o/otus_project/internal/configuration"
+	"github.com/and67o/otus_project/internal/interfaces"
 	"github.com/and67o/otus_project/internal/model"
 	_ "github.com/go-sql-driver/mysql" // nolint: gci
 	"github.com/jmoiron/sqlx"

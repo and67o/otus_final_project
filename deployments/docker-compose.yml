@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   # DB
-  myproject-db3:
+  db:
     image: mysql:8.0
     restart: always
     volumes:
@@ -30,6 +30,18 @@ services:
       - "15672"
     networks:
       banner-net:
+
+  # Banner-rotation
+  app:
+    build:
+      context: ..
+      dockerfile: ./deployments/app/Dockerfile
+    depends_on:
+      - db
+    restart: always
+    ports:
+      - '8888:8888'
+
 networks:
   banner-net:
     name: banner

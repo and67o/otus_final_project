@@ -3,6 +3,10 @@ package main
 import (
 	"context"
 	"flag"
+	"log"
+	"os"
+	"os/signal"
+
 	"github.com/and67o/otus_project/internal/app"
 	"github.com/and67o/otus_project/internal/configuration"
 	"github.com/and67o/otus_project/internal/interfaces"
@@ -10,9 +14,6 @@ import (
 	rmq "github.com/and67o/otus_project/internal/queue"
 	"github.com/and67o/otus_project/internal/server"
 	storage2 "github.com/and67o/otus_project/internal/storage"
-	"log"
-	"os"
-	"os/signal"
 )
 
 var configFile string
@@ -44,7 +45,7 @@ func main() {
 
 	queue, err := rmq.New(config.Rabbit)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err) // nolint: gocritic
 	}
 
 	err = queue.OpenChanel()

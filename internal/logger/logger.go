@@ -26,7 +26,7 @@ const (
 var errNotFound = errors.New("not found log level")
 
 func New(configuration configuration.LoggerConf) (*Logger, error) {
-	var logger = new(Logger)
+	logger := new(Logger)
 
 	config := getConfig(configuration.IsProd)
 
