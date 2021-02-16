@@ -31,17 +31,6 @@ services:
     networks:
       banner-net:
 
-  # Banner-rotation
-  app:
-    build:
-      context: ..
-      dockerfile: ./deployments/app/Dockerfile
-    depends_on:
-      - db
-    restart: always
-    ports:
-      - '8888:8888'
-
 networks:
   banner-net:
     name: banner
