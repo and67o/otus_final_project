@@ -66,11 +66,11 @@ func TestApp(t *testing.T) {
 		_ = ts.queue.CloseChannel()
 	}()
 
-	ts.appUp(t, ctx)
+	ts.appUp(ctx, t)
 
 	ts.appTest(ctx, t)
 
-	ts.appDown(t, ctx)
+	ts.appDown(ctx, t)
 }
 
 func getApp(t *testing.T) *TestCase {
@@ -94,9 +94,9 @@ func getApp(t *testing.T) *TestCase {
 	return &ts
 }
 
-func (ts *TestCase) appUp(t *testing.T, ctx context.Context) {
-	BannersUp(t, ctx, ts.storage)
-	StatisticsUp(t, ctx, ts.storage)
+func (ts *TestCase) appUp(ctx context.Context, t *testing.T) {
+	BannersUp(ctx, t, ts.storage)
+	StatisticsUp(ctx, t, ts.storage)
 }
 
 func getTestBanners() []model.BannerPlace {
@@ -111,7 +111,7 @@ func getTestBanners() []model.BannerPlace {
 	}
 }
 
-func BannersUp(t *testing.T, ctx context.Context, storage interfaces.Storage) {
+func BannersUp(ctx context.Context, t *testing.T, storage interfaces.Storage) {
 	banners := getTestBanners()
 	for i := range getTestBanners() {
 		err := storage.AddBanner(ctx, &banners[i])
@@ -119,7 +119,7 @@ func BannersUp(t *testing.T, ctx context.Context, storage interfaces.Storage) {
 	}
 }
 
-func StatisticsUp(t *testing.T, ctx context.Context, storage interfaces.Storage) {
+func StatisticsUp(ctx context.Context, t *testing.T, storage interfaces.Storage) {
 	statistics := getTestStatistics()
 	for i := range statistics {
 		err := storage.AddStatistics(ctx, &statistics[i])
@@ -183,12 +183,12 @@ func (ts *TestCase) appTest(ctx context.Context, t *testing.T) {
 	require.Equal(t, statBefore.CountShow+1, statAfterShow.CountShow)
 }
 
-func (ts *TestCase) appDown(t *testing.T, ctx context.Context) {
-	BannerDown(t, ctx, ts.storage)
-	StatisticsDown(t, ctx, ts.storage)
+func (ts *TestCase) appDown(ctx context.Context, t *testing.T) {
+	BannerDown(ctx, t, ts.storage)
+	StatisticsDown(ctx, t, ts.storage)
 }
 
-func BannerDown(t *testing.T, ctx context.Context, storage interfaces.Storage) {
+func BannerDown(ctx context.Context, t *testing.T, storage interfaces.Storage) {
 	banners := getTestBanners()
 	for i := range banners {
 		err := storage.DeleteBanner(ctx, &banners[i])
@@ -213,7 +213,7 @@ func getTestStatistics() []model.Statistics {
 	}
 }
 
-func StatisticsDown(t *testing.T, ctx context.Context, storage interfaces.Storage) {
+func StatisticsDown(ctx context.Context, t *testing.T, storage interfaces.Storage) {
 	statistics := getTestStatistics()
 	for i := range statistics {
 		err := storage.DeleteStatistics(ctx, &statistics[i])

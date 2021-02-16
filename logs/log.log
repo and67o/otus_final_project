@@ -1,15 +1,1 @@
-2021-02-01T23:02:42.192+0300	INFO	logger/logger.go:93	starting  server
-2021-02-01T23:03:03.632+0300	INFO	logger/logger.go:93	starting  server
-2021-02-01T23:03:16.830+0300	INFO	logger/logger.go:93	11111
-2021-02-08T13:42:32.025+0300	ERROR	logger/logger.go:96	not push to queue:Exception (504) Reason: "channel/connection is not open"
-github.com/and67o/otus_project/internal/logger.Logger.Error
-	/var/www/golang/src/project/internal/logger/logger.go:96
-github.com/and67o/otus_project/internal/queue.(*RabbitMQ).Push
-	/var/www/golang/src/project/internal/queue/queue.go:82
-github.com/and67o/otus_project/internal/app.(*App).ShowBanner
-	/var/www/golang/src/project/internal/app/app.go:93
-github.com/and67o/otus_project/internal/app.TestBaseAction
-	/var/www/golang/src/project/internal/app/app_test.go:77
-testing.tRunner
-	/root/sdk/go1.15.1/src/testing/testing.go:1108
-2021-02-08T14:13:37.409+0300	INFO	logger/logger.go:92	starting  server
+2021-02-16T17:06:17.424+0300	INFO	logger/logger.go:89	starting  server

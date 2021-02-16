@@ -11,7 +11,7 @@ import (
 	server "github.com/and67o/otus_project/internal/server/pb"
 )
 
-type App struct {
+type App struct { //nolint:maligned
 	logger  interfaces.Logger
 	storage interfaces.Storage
 	queue   interfaces.Queue
